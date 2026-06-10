@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boxing Shop</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <h1>🥊 Boxing Shop</h1>
+        <nav>
+            <button class="nav-btn active" onclick="showSection('productos')">Productos</button>
+            <button class="nav-btn" onclick="showSection('usuarios')">Usuarios</button>
+        </nav>
+    </div>
+</header>
+
+<main>
+
+    <section id="section-productos">
+        <div class="section-header">
+            <h2>Gestión de Productos</h2>
+            <button class="btn btn-primary" onclick="abrirModalProducto()">+ Nuevo Producto</button>
+        </div>
+        <div class="filtros">
+            <input type="text" id="search" placeholder="Buscar por nombre..." oninput="cargarProductos()">
+            <select id="filtroCategoria" onchange="cargarProductos()">
+                <option value="">Todas las categorías</option>
+                <option value="guantes">Guantes</option>
+                <option value="proteccion">Protección</option>
+                <option value="ropa">Ropa</option>
+                <option value="sacos">Sacos y manoplas</option>
+                <option value="calzado">Calzado</option>
+                <option value="accesorios">Accesorios</option>
+            </select>
+            <input type="number" id="minPrecio" placeholder="Precio mín." oninput="cargarProductos()">
+            <input type="number" id="maxPrecio" placeholder="Precio máx." oninput="cargarProductos()">
+            <label><input type="checkbox" id="soloStock" onchange="cargarProductos()"> Solo con stock</label>
+            <select id="sortBy" onchange="cargarProductos()">
+                <option value="">Ordenar por...</option>
+                <option value="nombre">Nombre</option>
+                <option value="precio">Precio</option>
+                <option value="stock">Stock</option>
+            </select>
+            <select id="sortDir" onchange="cargarProductos()">
+                <option value="asc">Ascendente</option>
+                <option value="desc">Descendente</option>
+            </select>
+        </div>
+        <div class="table-container">
+            <table id="tablaProductos">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Imagen</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="bodyProductos"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="section-usuarios" style="display:none">
+        <div class="section-header">
+            <h2>Gestión de Usuarios</h2>
+            <button class="btn btn-primary" onclick="abrirModalUsuario()">+ Nuevo Usuario</button>
+        </div>
+        <div class="table-container">
+            <table id="tablaUsuarios">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Categoría</th>
+                        <th>Peso</th>
+                        <th>Gimnasio</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="bodyUsuarios"></tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+
+<div id="modalProducto" class="modal" style="display:none">
+    <div class="modal-content">
+        <h3 id="modalProductoTitulo">Nuevo Producto</h3>
+        <input type="hidden" id="productoId">
+        <label>Nombre *</label>
+        <input type="text" id="productoNombre" placeholder="Ej: Guantes Everlast 16oz">
+        <label>Descripción</label>
+        <textarea id="productoDescripcion" placeholder="Descripción del producto..."></textarea>
+        <label>Precio (€) *</label>
+        <input type="number" id="productoPrecio" placeholder="0.00" step="0.01" min="0">
+        <label>Stock *</label>
+        <input type="number" id="productoStock" placeholder="0" min="0">
+        <label>Categoría *</label>
+        <select id="productoCategoria">
+            <option value="">-- Selecciona --</option>
+            <option value="guantes">Guantes</option>
+            <option value="proteccion">Protección</option>
+            <option value="ropa">Ropa</option>
+            <option value="sacos">Sacos y manoplas</option>
+            <option value="calzado">Calzado</option>
+            <option value="accesorios">Accesorios</option>
+        </select>
+        <label>URL de imagen</label>
+        <input type="text" id="productoImagen" placeholder="https://www.roninwear.com/images/shark-boxing-glove-megalod%C3%B3n-20-white-1.jpg;">
+        <div id="previewImagen" style="margin-top:8px;display:none;">
+            <img id="imgPreview" src="" alt="Preview" style="max-width:100%;max-height:150px;border-radius:6px;object-fit:cover;">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="cerrarModal('modalProducto')">Cancelar</button>
+            <button class="btn btn-primary" onclick="guardarProducto()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalUsuario" class="modal" style="display:none">
+    <div class="modal-content">
+        <h3 id="modalUsuarioTitulo">Nuevo Usuario</h3>
+        <input type="hidden" id="usuarioId">
+        <label>Nombre *</label>
+        <input type="text" id="usuarioNombre" placeholder="Nombre completo">
+        <label>Email *</label>
+        <input type="email" id="usuarioEmail" placeholder="email@ejemplo.com">
+        <label>Contraseña *</label>
+        <input type="password" id="usuarioPassword" placeholder="Contraseña">
+        <label>Rol</label>
+        <select id="usuarioRol">
+            <option value="USER">USER</option>
+            <option value="ADMIN">ADMIN</option>
+        </select>
+        <label>Categoría</label>
+        <select id="usuarioCategoria">
+            <option value="">-- Selecciona --</option>
+            <option value="amateur">Amateur</option>
+            <option value="semipro">Semiprofesional</option>
+            <option value="profesional">Profesional</option>
+        </select>
+        <label>Peso</label>
+        <select id="usuarioPeso">
+            <option value="">-- Selecciona --</option>
+            <option value="mosca">Mosca (-52kg)</option>
+            <option value="gallo">Gallo (-56kg)</option>
+            <option value="pluma">Pluma (-60kg)</option>
+            <option value="welter">Welter (-69kg)</option>
+            <option value="medio">Medio (-75kg)</option>
+            <option value="semipesado">Semipesado (-81kg)</option>
+            <option value="pesado">Pesado (+81kg)</option>
+        </select>
+        <label>Gimnasio</label>
+        <input type="text" id="usuarioGimnasio" placeholder="Nombre del gimnasio">
+        <label>Años de experiencia</label>
+        <input type="number" id="usuarioExperiencia" placeholder="0" min="0">
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="cerrarModal('modalUsuario')">Cancelar</button>
+            <button class="btn btn-primary" onclick="guardarUsuario()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/productos.js"></script>
+<script src="js/usuarios.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
